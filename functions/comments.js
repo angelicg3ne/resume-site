@@ -1,45 +1,38 @@
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const forms = document.querySelectorAll("form");
+export async function onRequest(context) {
+  const { request, env } = context;
 
-    forms.forEach((form) => {
-      const project = form.parentElement.querySelector("h4").textContent;
-      const commentsList = form.parentElement.querySelector(".comments ul");
+  if (request.method === "GET") {
+    const url = new URL(request.url);
+    const project = url.searchParams.get("project");
 
-      // Load existing comments
-      fetch(`/comments?project=${encodeURIComponent(project)}`)
-        .then(res => res.json())
-        .then(comments => {
-          comments.forEach(comment => {
-            const li = document.createElement("li");
-            li.textContent = `${comment.name}: ${comment.text}`;
-            commentsList.appendChild(li);
-          });
-        });
+    if (!project) {
+      return new Response("Missing project", { status: 400 });
+    }
 
-      // Handle comment submission
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
+    const { results } = await env.DB.prepare(
+      "SELECT name, text, timestamp FROM comments WHERE project = ? ORDER BY timestamp DESC"
+    ).bind(project).all();
 
-        const name = form.querySelector('input[name="name"]').value;
-        const text = form.querySelector('textarea[name="comment"]').value;
-
-        fetch("/comments", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, text, project })
-        })
-        .then(res => {
-          if (res.ok) {
-            const li = document.createElement("li");
-            li.textContent = `${name}: ${text}`;
-            commentsList.prepend(li);
-            form.reset();
-          } else {
-            alert("Error submitting comment.");
-          }
-        });
-      });
+    return new Response(JSON.stringify(results), {
+      headers: { "Content-Type": "application/json" },
     });
-  });
-</script>
+  }
+
+  if (request.method === "POST") {
+    const data = await request.json();
+    const { name, text, project } = data;
+
+    if (!name || !text || !project) {
+      return new Response("Missing fields", { status: 400 });
+    }
+
+    await env.db.prepare(
+      "INSERT INTO comments (name, text, project) VALUES (?, ?, ?)"
+    ).bind(name, text, project).run();
+
+    return new Response("Comment saved", { status: 200 });
+  }
+
+  return new Response("Method Not Allowed", { status: 405 });
+}
+
