@@ -1,0 +1,8 @@
+name = "resume-site"
+compatibility_date = "2025-05-13"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "db"
+database_name = "resume-comments"
+database_id = "YOUR_DATABASE_ID_HERE"
