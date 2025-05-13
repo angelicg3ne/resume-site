@@ -55,6 +55,42 @@ a {
     text-decoration: none;
 }
 
-a:hover {
-    text-decoration: underline;
+.project-block {
+  
+  padding: 16px;
+  margin: 20px 0;
+ ]\
+  
+}
+
+.project-block h4 {
+  margin-top: 0;
+}
+
+.project-block p {
+  margin: 6px 0;
+}
+
+.project-block form {
+  margin-top: 12px;
+}
+
+.project-block input,
+.project-block textarea {
+  width: 90%;
+  margin: 4px 0 10px;
+  padding: 8px;
+}
+
+.project-block button {
+  background-color: navy;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.project-block .comments ul {
+  padding-left: 16px;
+  margin-top: 10px;
 }
