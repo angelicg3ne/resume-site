@@ -18,7 +18,7 @@
     <section>
         <h3>Skills</h3>
         <ul>
-            <li>Programming: Python, C++, Java, HTML/CSS</li>
+            <li>Programming: Python, C++, Java, JavaScript, HTML/CSS</li>
             <li>Tools: Git, VS Code, Microsoft Office Suite</li>
             <li>Certifications (in progress): Scrum, CAPM</li>
             <li>Languages: English, Spanish (native/bilingual)</li>
@@ -30,7 +30,7 @@
         <h3>Current Leadership and Professional Development</h3>
         <ul>
             <li><strong>* LIU Fencing Operations Manager: (September 2023 - Present)</strong><br/>
-                - Manage a budget of $184,000 for men’s and women's team to accommodate travel, food, competition fees, equipment orders, clothing orders for the entire season<br/>
+                - Manage a budget of six-figures for a men’s and women's team to accommodate travel, food, competition fees, equipment orders, clothing orders for the entire season<br/>
                 - Coordinate large competitions (8 hours+) with athletics directors and coaches from all divisions of the NCAA<br/>
                 Recent Accomplishments: 4 NCAA Qualifiers, 1 NCAA All-Americans, 1 NCAA Champion, 1 Olympic Medalist</li>
                 </li>
@@ -61,8 +61,8 @@
     </section>
 
     <section>
+        <h3>Coursework & Papers</h3>
     <div class="project-block">
-  <h3>Coursework & Papers</h3>
   <ul>
   <div>
     <li><strong>Position Paper – France, NMUN DC 2024</strong></br>
@@ -105,6 +105,7 @@
 </br>
     <div>
       <strong>Comments:</strong>
+        <ul></ul>
     </div>
 
 </br>
@@ -143,6 +144,53 @@
             </li>
         </ul>
     </section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const forms = document.querySelectorAll("form");
+
+    forms.forEach((form) => {
+      const project = form.parentElement.querySelector("h4").textContent;
+      const commentsList = form.parentElement.querySelector(".comments ul");
+
+      // Load existing comments
+      fetch(`/comments?project=${encodeURIComponent(project)}`)
+        .then(res => res.json())
+        .then(comments => {
+          comments.forEach(comment => {
+            const li = document.createElement("li");
+            li.textContent = `${comment.name}: ${comment.text}`;
+            commentsList.appendChild(li);
+          });
+        });
+
+      // Handle comment submission
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const name = form.querySelector('input[name="name"]').value;
+        const text = form.querySelector('textarea[name="comment"]').value;
+
+        fetch("/comments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, text, project })
+        })
+        .then(res => {
+          if (res.ok) {
+            const li = document.createElement("li");
+            li.textContent = `${name}: ${text}`;
+            commentsList.prepend(li);
+            form.reset();
+          } else {
+            alert("Error submitting comment.");
+          }
+        });
+      });
+    });
+  });
+</script>
+
 
 </body>
 </html>
